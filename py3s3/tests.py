@@ -1,8 +1,9 @@
 import datetime
+import os
 import time
 import unittest
 
-from .files import S3ContentFile
+from .storage import S3ContentFile
 from .storage import S3IOError
 from .storage import S3Storage
 

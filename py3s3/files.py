@@ -2,11 +2,12 @@
     A custom ContentFile for S3 uploads/downloads.
 """
 import hashlib
+from io import BytesIO
 import logging
 import os
 
-from .config import ENCODING
 from .utils import b64_string
+from .utils import ENCODING
 
 logger = logging.getLogger(__name__)
 
@@ -169,7 +170,7 @@ class ContentFile(File):
     A File-like object that takes just raw content, rather than an actual file.
     """
     def __init__(self, content, name=None):
-        super().__init__(BytesIO(content), name=name)
+        super().__init__(content, name=name)
         self.size = len(content)
 
     def __str__(self):
