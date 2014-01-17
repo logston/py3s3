@@ -1,11 +1,6 @@
-# Compiled python modules.
-*.pyc
-
-# Setuptools distribution folder.
-/dist/
-
-# Python egg metadata, regenerated from source files by setuptools.
-/*.egg-info
-
 # PyCharm
-/.idea/
+.idea/
+
+# AWS api info used for tests
+secrets.sh
+rm_secrets.sh

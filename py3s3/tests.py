@@ -5,8 +5,11 @@ import unittest
 from .files import S3ContentFile
 from .storage import S3IOError
 from .storage import S3Storage
-from .storage import S3MediaStorage
-from .storage import S3StaticStorage
+
+
+BUCKET = os.getenv('AWS_S3_OBJECT_ENCODING', None)
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', None)
+AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', None)
 
 
 class Py3s3S3StorageTestCase(unittest.TestCase):
@@ -22,7 +25,7 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
         ])
         self.test_file_name = '/test.txt'
         self.file = S3ContentFile(self.test_content)
-        self.storage = S3Storage()
+        self.storage = S3Storage('', BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
     def test__000_PUT_saves_test_file_to_s3(self):
         name = self.storage._save(self.test_file_name, self.file)
