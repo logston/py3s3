@@ -1,2 +1,1 @@
-# Payum
-[![Build Status](https://travis-ci.org/Payum/Payum.png?branch=master)](https://travis-ci.org/Payum/Payum)
+.. image:: https://travis-ci.org/logston/py3s3.png?branch=master   :target: https://travis-ci.org/logston/py3s3
