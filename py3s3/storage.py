@@ -209,6 +209,16 @@ class S3Storage(Storage):
         timestamp = self.request_timestamp()
 
         mimetype = file_object.mimetype if file_object.mimetype else ''
+
+        # build headers
+        headers = dict()
+        headers['Date'] = timestamp
+        headers['Content-Length'] = file_object.size
+        headers['Content-MD5'] = file_object.md5hash()
+        if mimetype:
+            headers['Content-Type'] = file_object.mimetype
+        headers['x-amz-acl'] = 'public-read'
+
         stringtosign = '\n'.join([
             'PUT',
             file_object.md5hash(),
@@ -219,14 +229,7 @@ class S3Storage(Storage):
         ])
         signature = self.request_signature(stringtosign)
 
-        headers = dict()
-        headers['Date'] = timestamp
         headers['Authorization'] = ''.join(['AWS' + ' ', self.access_key, ':', signature])
-        headers['Content-Length'] = file_object.size
-        headers['Content-MD5'] = file_object.md5hash()
-        if mimetype:
-            headers['Content-Type'] = file_object.mimetype
-        headers['x-amz-acl'] = 'public-read'
 
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('PUT', file_object.name, file_object.read(), headers=headers)
