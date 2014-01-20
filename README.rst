@@ -1,1 +1,1 @@
-.. image:: https://travis-ci.org/logston/py3s3.png?branch=master   :target: https://travis-ci.org/logston/py3s3
+.. image:: https://travis-ci.org/logston/py3s3.png?branch=master
