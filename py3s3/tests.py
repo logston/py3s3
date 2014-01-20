@@ -8,9 +8,9 @@ from .storage import S3IOError
 from .storage import S3Storage
 
 
-BUCKET = os.getenv('AWS_S3_BUCKET', None)
-AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', None)
-AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', None)
+BUCKET = 'logston_testing'
+AWS_ACCESS_KEY = 'AKIAJO4IRXUIY47GA45Q'
+AWS_SECRET_KEY = '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'
 
 
 class Py3s3S3StorageTestCase(unittest.TestCase):
