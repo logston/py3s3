@@ -31,7 +31,7 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
     def test__000_PUT_saves_test_file_to_s3(self):
         name = self.storage._save(self.test_file_name, self.file)
         self.assertEqual(name, self.test_file_name)
-        self.modify_time_dt = datetime.datetime.utcnow()
+        self.__class__.modify_time_dt = datetime.datetime.utcnow()
 
     def test__001_HEAD_returns_test_file_existance(self):
         self.assertTrue(self.storage.exists(self.test_file_name))
@@ -43,7 +43,7 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
     def test__003_HEAD_returns_correct_modified_time(self):
         time_ = self.storage.modified_time(self.test_file_name)
         self.assertAlmostEqual(
-            time_, self.modify_time_dt,
+            time_, self.__class__.modify_time_dt,
             delta=datetime.timedelta(seconds=2)
         )
 

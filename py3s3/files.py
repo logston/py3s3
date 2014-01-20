@@ -212,11 +212,15 @@ class S3ContentFile(ContentFile):
             self._content = value
         else:
             self._content = value.encode(ENCODING)
+        self.size = len(value)
 
     def md5hash(self):
         """Return the MD5 hash string of the file content"""
         digest = hashlib.md5(self.content).digest()
         return b64_string(digest)
+
+    def read(self):
+        return self.content
 
     def write(self, content):
         raise NotImplementedError
