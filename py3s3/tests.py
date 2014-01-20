@@ -8,7 +8,7 @@ from .storage import S3IOError
 from .storage import S3Storage
 
 
-BUCKET = os.getenv('AWS_S3_OBJECT_ENCODING', None)
+BUCKET = os.getenv('AWS_S3_BUCKET', None)
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', None)
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', None)
 
@@ -25,7 +25,7 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
             str(self.datetime)
         ])
         self.test_file_name = '/test.txt'
-        self.file = S3ContentFile(self.test_content)
+        self.file = S3ContentFile(self.test_content, self.test_file_name)
         self.storage = S3Storage('', BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
     def test__000_PUT_saves_test_file_to_s3(self):
@@ -54,6 +54,3 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
     def test__005_DELETE_deletes_test_file_from_s3(self):
         self.storage.delete(self.test_file_name)
         self.assertFalse(self.storage.exists(self.test_file_name))
-
-if __name__ == '__main__':
-    unittest.main()

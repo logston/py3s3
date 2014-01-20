@@ -161,10 +161,6 @@ class File(FileProxyMixin):
         self.file.close()
 
 
-class S3File(File):
-    pass
-
-
 class ContentFile(File):
     """
     A File-like object that takes just raw content, rather than an actual file.
@@ -199,6 +195,9 @@ class S3ContentFile(ContentFile):
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return '{}'.format(self.name)
 
     @property
     def content(self):
