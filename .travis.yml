@@ -1,6 +1,10 @@
 language: python
 python:
-  - "3.2"
-  - "3.3"
+- '3.3'
 script:
-  - nosetests py3s3/tests.py
+- nosetests py3s3/tests.py
+env:
+  global:
+  - secure: WvL+JNKHTTzxHlmDljsFPQJYdAik4C3Ys6NKP3xgF7+g7Foq3MbJ3YRquqUU93L7/S9ikZ2huniMhkretVHKR1z1aJEGVNcvn0SFu8V5CJ7McRgn/lDpz3kMsaNGstMAWvowEAu3/3/AgqRmUhXu1+hB97VLpX+gOojjvk/1oB4=
+  - secure: lnUmm2yQ+gHrblKHiAI6Tj2epvYExuYLFdSD/tDFjtKa7AIOJGsMWZLWY5sy9EX/wQZkTAC/lgJ42lqvHwAyIeKvxwR+wGR5U7qNE50mgYiBMAm1FhSCC3naLZsSe+DGd6tA2yfurkB8XnfK85t/fe3Hpcdx5B1XbjvClIULWUA=
+  - secure: MHZD7+fo0G3SJZTSE7FSnFfXdw9lzBzqWjWHhspwMntqLdDMKvztqPmYee08t/HShdNLPHFUxSMFIRl2A6/h4tDz5BIwfgfibGjxfHIbzzr04bVY7lPjl9HdCtBXlWiKJKTKAaG4+RK8RElY1SgZlPIdOyO9F00W3e+VtrdFd4s=
