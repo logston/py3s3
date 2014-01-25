@@ -1,14 +1,32 @@
 #! /usr/bin/env python
 
 import os
+import sys
 
-from distutils.core import setup
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
 import py3s3
 
 
 with open(os.path.join(os.path.dirname(__file__), "README.rst")) as file:
     README = file.read()
+
+
+class Tox(TestCommand):
+
+    """Command to make python setup.py test run."""
+
+    def finalize_options(self):
+        super().finalize_options()
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        # Do this import here because tests_require isn't processed
+        # early enough to do a module-level import.
+        from tox._cmdline import main
+        sys.exit(main(self.test_args))
 
 # TODO choose correct classifiers
 
@@ -34,5 +52,7 @@ setup(name='py3s3',
       author_email=py3s3.__email__,
       license='BSD',
       classifiers=CLASSIFIERS,
-      packages=['py3s3']
+      packages=['py3s3'],
+      tests_require=['tox'],
+      cmdclass={'test': Tox},
 )
