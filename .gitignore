@@ -1,9 +1,14 @@
 # Python
 *.py[co]
 __pycache__/
+*.egg-info
 
 # PyCharm
 .idea/
+
+# Testing
+.coverage
+.tox
 
 # AWS api info used for tests
 secrets.sh
