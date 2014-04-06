@@ -28,6 +28,10 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
         self.file = S3ContentFile(self.test_content, self.test_file_name)
         self.storage = S3Storage('', BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
+    def test_get_available_name(self):
+        # TODO
+        pass
+
     def test__000_PUT_saves_test_file_to_s3(self):
         name = self.storage._save(self.test_file_name, self.file)
         self.assertEqual(name, self.test_file_name)

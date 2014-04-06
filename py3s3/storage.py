@@ -6,6 +6,8 @@ from datetime import datetime
 import hashlib
 import hmac
 from http.client import HTTPConnection
+import itertools
+import os
 import urllib.parse
 from wsgiref.handlers import format_date_time
 
