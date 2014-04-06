@@ -25,7 +25,7 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
             str(self.datetime)
         ])
         self.test_file_name = '/test.txt'
-        self.file = S3ContentFile(self.test_content, self.test_file_name)
+        self.file = S3ContentFile(self.test_content, self.test_file_name, '')
         self.storage = S3Storage('', BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
     def test_get_available_name(self):

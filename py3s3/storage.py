@@ -207,33 +207,33 @@ class S3Storage(Storage):
         ).digest()
         return b64_string(digest)
 
-    def _put_file(self, file_object):
-        """Send PUT request to S3 with file_object contents"""
+    def _put_file(self, file):
+        """Send PUT request to S3 with file contents"""
         timestamp = self.request_timestamp()
 
         # build headers
         headers = dict()
         headers['Date'] = timestamp
-        headers['Content-Length'] = file_object.size
-        headers['Content-MD5'] = file_object.md5hash()
-        if file_object.mimetype:
-            headers['Content-Type'] = file_object.mimetype
+        headers['Content-Length'] = file.size
+        headers['Content-MD5'] = file.md5hash()
+        if file.mimetype:
+            headers['Content-Type'] = file.mimetype
         headers['x-amz-acl'] = 'public-read'
 
         stringtosign = '\n'.join([
             'PUT',
-            file_object.md5hash(),
-            file_object.mimetype,
+            file.md5hash(),
+            file.mimetype,
             timestamp,
             'x-amz-acl:public-read',
-            '/' + self.bucket + file_object.name
+            '/' + self.bucket + file.name
         ])
         signature = self.request_signature(stringtosign)
 
         headers['Authorization'] = ''.join(['AWS' + ' ', self.access_key, ':', signature])
 
         with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('PUT', file_object.name, file_object.read(), headers=headers)
+            conn.request('PUT', file.name, file.read(), headers=headers)
             response = conn.getresponse()
 
         if response.status not in (200,):
@@ -243,7 +243,7 @@ class S3Storage(Storage):
         prefixed_name = self._prepend_name_prefix(name)
         file.name = prefixed_name
 
-        mimetype = file.mimetype if hasattr(file, 'mimetype') else ''
+        mimetype = file.mimetype if hasattr(file, 'mimetype') and file.mimetype else ''
 
         # Convert file to a S3ContentFile so file
         # can be pushed up to S3.
