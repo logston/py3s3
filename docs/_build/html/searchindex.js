@@ -1,0 +1,1 @@
+Search.setIndex({envversion:43,titles:["Welcome to py3s3&#8217;s documentation!"],objnames:{},filenames:["index"],objects:{},terms:{content:0,index:0,modul:0,search:0,page:0},objtypes:{},titleterms:{py3s3:0,document:0,welcom:0,indic:0,tabl:0}})
