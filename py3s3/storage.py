@@ -11,6 +11,7 @@ import os
 import urllib.parse
 from wsgiref.handlers import format_date_time
 
+from .files import File
 from .files import S3ContentFile
 from .utils import b64_string
 from .utils import ENCODING
@@ -43,7 +44,7 @@ class Storage(object):
         """
         return self._open(name, mode)
 
-    def save(self, name, content):
+    def save(self, name, file):
         """
         Saves new content to the file specified by name. The content should be
         a proper File object or any python file-like object, ready to be read
@@ -51,16 +52,16 @@ class Storage(object):
         """
         # Get the proper name for the file, as it will actually be saved.
         if name is None:
-            name = content.name
+            name = file.name
 
-        if not hasattr(content, 'chunks'):
-            content = File(content)
+        if not hasattr(file, 'chunks'):
+            file = File(file, name=name)
 
         name = self.get_available_name(name)
-        name = self._save(name, content)
+        name = self._save(name, file)
 
         # Store filenames with forward slashes, even on Windows
-        return force_text(name.replace('\\', '/'))
+        return name.replace('\\', '/')
 
     # These methods are part of the public API, with default implementations.
 
@@ -210,21 +211,19 @@ class S3Storage(Storage):
         """Send PUT request to S3 with file_object contents"""
         timestamp = self.request_timestamp()
 
-        mimetype = file_object.mimetype if file_object.mimetype else ''
-
         # build headers
         headers = dict()
         headers['Date'] = timestamp
         headers['Content-Length'] = file_object.size
         headers['Content-MD5'] = file_object.md5hash()
-        if mimetype:
+        if file_object.mimetype:
             headers['Content-Type'] = file_object.mimetype
         headers['x-amz-acl'] = 'public-read'
 
         stringtosign = '\n'.join([
             'PUT',
             file_object.md5hash(),
-            mimetype,
+            file_object.mimetype,
             timestamp,
             'x-amz-acl:public-read',
             '/' + self.bucket + file_object.name
@@ -240,10 +239,18 @@ class S3Storage(Storage):
         if response.status not in (200,):
             raise IOError('py3s3 PUT error. Response status: {}'.format(response.status))
 
-    def _save(self, name, file_object):
+    def _save(self, name, file):
         prefixed_name = self._prepend_name_prefix(name)
-        file_object.name = prefixed_name
-        self._put_file(file_object)
+        file.name = prefixed_name
+
+        mimetype = file.mimetype if hasattr(file, 'mimetype') else ''
+
+        # Convert file to a S3ContentFile so file
+        # can be pushed up to S3.
+        if type(file) is not S3ContentFile:
+            file = S3ContentFile(file.read(), file.name, mimetype)
+
+        self._put_file(file)
         return name
 
     def _get_file(self, name):
