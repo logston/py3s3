@@ -237,7 +237,8 @@ class S3Storage(Storage):
             response = conn.getresponse()
 
         if response.status not in (200,):
-            raise IOError('py3s3 PUT error. Response status: {}'.format(response.status))
+            raise S3IOError('py3s3 PUT error. Response status: {}. Reason: {}'.format(
+                            response.status, response.reason))
 
     def _save(self, name, file):
         prefixed_name = self._prepend_name_prefix(name)
@@ -280,7 +281,8 @@ class S3Storage(Storage):
                     # to non-existing files
                     raise S3FileDoesNotExistError(name)
                 # catch all other cases
-                raise S3IOError('py3s3 GET error. Response status: {}'.format(response.status))
+                raise S3IOError('py3s3 GET error. Response status: {}. Reason: {}.'.format(
+                                response.status, response.reason))
 
             file = S3ContentFile(response.read())
         return file
@@ -310,13 +312,18 @@ class S3Storage(Storage):
             conn.request('DELETE', prefixed_name, headers=headers)
             response = conn.getresponse()
             if not response.status in (204,):
-                raise S3IOError('py3s3 DELETE error. Response status: {}'.format(response.status))
+                raise S3IOError('py3s3 DELETE error. Response status: {}. Reason: {}.'.format(
+                                response.status, response.reason))
 
     def exists(self, name):
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('HEAD', self.url(name))
             response = conn.getresponse()
-            return response.status in (200,)
+            if response.status in (200, 404):
+                return response.status == 200
+            else:
+                raise S3IOError('py3s3 HEAD error. Reposne status: {}. Reason: {}'.format(
+                                response.status, response.reason))
 
     def listdir(self, path):
         raise NotImplementedError()
