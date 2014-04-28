@@ -11,10 +11,11 @@ import os
 import urllib.parse
 from wsgiref.handlers import format_date_time
 
-from .files import File
-from .files import S3ContentFile
-from .utils import b64_string
-from .utils import ENCODING
+from py3s3.files import File
+from py3s3.files import S3ContentFile
+from py3s3.utils import b64_string
+from py3s3.utils import ENCODING
+from py3s3.utils import media_types
 
 
 class S3IOError(IOError):
@@ -216,15 +217,14 @@ class S3Storage(Storage):
         headers['Date'] = timestamp
         headers['Content-Length'] = file.size
         headers['Content-MD5'] = file.md5hash()
-        if file.mimetype:
-            headers['Content-Type'] = file.mimetype
+        headers['Content-Type'] = self._get_content_type(file)
         headers['x-amz-acl'] = 'public-read'
 
         stringtosign = '\n'.join([
             'PUT',
-            file.md5hash(),
-            file.mimetype,
-            timestamp,
+            headers['Content-MD5'],
+            headers['Content-Type'],
+            headers['Date'],
             'x-amz-acl:public-read',
             '/' + self.bucket + file.name
         ])
@@ -236,9 +236,13 @@ class S3Storage(Storage):
             conn.request('PUT', file.name, file.read(), headers=headers)
             response = conn.getresponse()
 
-        if response.status not in (200,):
-            raise S3IOError('py3s3 PUT error. Response status: {}. Reason: {}'.format(
-                            response.status, response.reason))
+            if response.status not in (200,):
+                raise S3IOError(
+                    'py3s3 PUT error. '
+                    'Response status: {}. '
+                    'Reason: {}. '
+                    'Response Text: \n'
+                    '{}'.format(response.status, response.reason, response.read()))
 
     def _save(self, name, file):
         prefixed_name = self._prepend_name_prefix(name)
@@ -281,8 +285,12 @@ class S3Storage(Storage):
                     # to non-existing files
                     raise S3FileDoesNotExistError(name)
                 # catch all other cases
-                raise S3IOError('py3s3 GET error. Response status: {}. Reason: {}.'.format(
-                                response.status, response.reason))
+                raise S3IOError(
+                    'py3s3 GET error. '
+                    'Response status: {}. '
+                    'Reason: {}. '
+                    'Response Text: \n'
+                    '{}'.format(response.status, response.reason, response.read()))
 
             file = S3ContentFile(response.read())
         return file
@@ -312,18 +320,24 @@ class S3Storage(Storage):
             conn.request('DELETE', prefixed_name, headers=headers)
             response = conn.getresponse()
             if not response.status in (204,):
-                raise S3IOError('py3s3 DELETE error. Response status: {}. Reason: {}.'.format(
-                                response.status, response.reason))
+                raise S3IOError(
+                    'py3s3 DELETE error. '
+                    'Response status: {}. '
+                    'Reason: {}. '
+                    'Response Text: \n'
+                    '{}'.format(response.status, response.reason, response.read()))
 
     def exists(self, name):
-        with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('HEAD', self.url(name))
-            response = conn.getresponse()
-            if response.status in (200, 404):
-                return response.status == 200
-            else:
-                raise S3IOError('py3s3 HEAD error. Reposne status: {}. Reason: {}'.format(
-                                response.status, response.reason))
+        response = self._head(name)
+        if response.status in (200, 404):
+            return response.status == 200
+        else:
+            raise S3IOError(
+                'py3s3 HEAD error. '
+                'Response status: {}. '
+                'Reason: {}. '
+                'Response Text: \n'
+                '{}'.format(response.status, response.reason, response.read()))
 
     def listdir(self, path):
         raise NotImplementedError()
@@ -342,10 +356,31 @@ class S3Storage(Storage):
         url_tuple = (scheme, self.netloc, path, query, fragment)
         return urllib.parse.urlunsplit(url_tuple)
 
-    def modified_time(self, name):
+    def _head(self, name):
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('HEAD', self.url(name))
-            dt_header = conn.getresponse().getheader('Last-Modified', None)
+            return conn.getresponse()
+
+    def _get_headers(self, name):
+        return dict(self._head(name).getheaders())
+
+    def modified_time(self, name):
+        dt_header = self._get_headers(name).get('Last-Modified')
         if dt_header is None:
             raise S3IOError('No modified time available for file: {}'.format(name))
         return self.datetime_from_aws_timestamp(dt_header)
+
+    def _get_content_type(self, file):
+        """
+        Return content type of file. If file does not
+        have a content type, make a guess.
+        """
+        if file.mimetype:
+            return file.mimetype
+
+        # get file extension
+        _, extension = os.path.splitext(file.name)
+        extension = extension.strip('.')
+
+        # Make an educated guess about what the Content-Type should be.
+        return media_types[extension] if extension in media_types else 'binary/octet-stream'

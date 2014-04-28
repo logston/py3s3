@@ -6,8 +6,8 @@ from io import BytesIO
 import logging
 import os
 
-from .utils import b64_string
-from .utils import ENCODING
+from py3s3.utils import b64_string
+from py3s3.utils import ENCODING
 
 logger = logging.getLogger(__name__)
 
