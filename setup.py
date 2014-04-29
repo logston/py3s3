@@ -31,25 +31,31 @@ class Tox(TestCommand):
 # TODO choose correct classifiers
 
 CLASSIFIERS = [
-    "Development Status :: 0 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Environment :: Web Environment",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.3",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: System :: Networking",
+    "Programming Language :: Python :: 3.4",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: System :: Filesystems",
+    "Topic :: Utilities",
 ]
 
 setup(name='py3s3',
       version=py3s3.__version__,
-      description='A bare bones package for uploading to and downloading '
-                  'from AWS S3 from within Python 3.',
-      long_description=README,
-      url='http://github.com/logston/py3s3',
       author=py3s3.__author__,
       author_email=py3s3.__email__,
+      maintainer=py3s3.__author__,
+      maintainer_email=py3s3.__email__,
+      url='http://github.com/logston/py3s3',
+      description='A bare bones package for uploading to and downloading '
+                  'from AWS S3 from within Python 3.3+',
+      long_description=README,
       license='BSD',
       classifiers=CLASSIFIERS,
       packages=['py3s3'],

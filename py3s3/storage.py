@@ -208,32 +208,78 @@ class S3Storage(Storage):
         ).digest()
         return b64_string(digest)
 
+    def _head(self, name):
+        with closing(HTTPConnection(self.netloc)) as conn:
+            conn.request('HEAD', self.url(name), headers=self._get_request_headers('HEAD', name))
+            return conn.getresponse()
+
+    def _get_request_headers(self, method, prefixed_name, post_params=None):
+        headers = dict()
+        timestamp = self.request_timestamp()
+        headers['Date'] = timestamp
+
+        stringtosign_list = [method]
+
+        if post_params:
+            headers['Content-Length'] = post_params['file_size']
+            headers['Content-MD5'] = post_params['file_hash']
+            headers['Content-Type'] = post_params['content_type']
+            headers['x-amz-acl'] = 'public-read'
+
+            stringtosign_list += [
+                headers['Content-MD5'],
+                headers['Content-Type'],
+                headers['Date'],
+                'x-amz-acl:public-read'
+            ]
+        else:
+            stringtosign_list += [
+                '',
+                '',
+                timestamp
+            ]
+
+        stringtosign_list.append('/' + self.bucket + prefixed_name)
+
+        signature = self.request_signature('\n'.join(stringtosign_list))
+
+        if self.access_key and self.secret_key:
+            headers['Authorization'] = ''.join(['AWS' + ' ', self.access_key, ':', signature])
+
+        return headers
+
+    def _get_response_headers(self, name):
+        return dict(self._head(name).getheaders())
+
+    def _get_content_type(self, file):
+        """
+        Return content type of file. If file does not
+        have a content type, make a guess.
+        """
+        if file.mimetype:
+            return file.mimetype
+
+        # get file extension
+        _, extension = os.path.splitext(file.name)
+        extension = extension.strip('.')
+
+        # Make an educated guess about what the Content-Type should be.
+        return media_types[extension] if extension in media_types else 'binary/octet-stream'
+
     def _put_file(self, file):
         """Send PUT request to S3 with file contents"""
-        timestamp = self.request_timestamp()
 
-        # build headers
-        headers = dict()
-        headers['Date'] = timestamp
-        headers['Content-Length'] = file.size
-        headers['Content-MD5'] = file.md5hash()
-        headers['Content-Type'] = self._get_content_type(file)
-        headers['x-amz-acl'] = 'public-read'
+        post_params = {
+            'file_size': file.size,
+            'file_hash': file.md5hash(),
+            'content_type': self._get_content_type(file),
 
-        stringtosign = '\n'.join([
-            'PUT',
-            headers['Content-MD5'],
-            headers['Content-Type'],
-            headers['Date'],
-            'x-amz-acl:public-read',
-            '/' + self.bucket + file.name
-        ])
-        signature = self.request_signature(stringtosign)
+        }
 
-        headers['Authorization'] = ''.join(['AWS' + ' ', self.access_key, ':', signature])
+        headers = self._get_request_headers('PUT', file.prefixed_name, post_params=post_params)
 
         with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('PUT', file.name, file.read(), headers=headers)
+            conn.request('PUT', file.prefixed_name, file.read(), headers=headers)
             response = conn.getresponse()
 
             if response.status not in (200,):
@@ -244,46 +290,20 @@ class S3Storage(Storage):
                     'Response Text: \n'
                     '{}'.format(response.status, response.reason, response.read()))
 
-    def _save(self, name, file):
-        prefixed_name = self._prepend_name_prefix(name)
-        file.name = prefixed_name
-
-        mimetype = file.mimetype if hasattr(file, 'mimetype') and file.mimetype else ''
-
-        # Convert file to a S3ContentFile so file
-        # can be pushed up to S3.
-        if type(file) is not S3ContentFile:
-            file = S3ContentFile(file.read(), file.name, mimetype)
-
-        self._put_file(file)
-        return name
-
-    def _get_file(self, name):
+    def _get_file(self, prefixed_name):
         """
         Return a signature for use in GET requests
         """
-        timestamp = self.request_timestamp()
-        stringtosign = '\n'.join([
-            'GET',
-            '',
-            '',
-            timestamp,
-            '/' + self.bucket + name
-        ])
-        signature = self.request_signature(stringtosign)
-        headers = dict()
-        headers['Date'] = timestamp
-        if self.access_key and self.secret_key:
-            headers['Authorization'] = ''.join(['AWS' + ' ', self.access_key, ':', signature])
+        headers = self._get_request_headers('GET', prefixed_name)
         file = S3ContentFile('')
         with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('GET', name, headers=headers)
+            conn.request('GET', prefixed_name, headers=headers)
             response = conn.getresponse()
             if not response.status in (200,):
                 if response.length is None:
                     # length == None seems to be returned from GET requests
                     # to non-existing files
-                    raise S3FileDoesNotExistError(name)
+                    raise S3FileDoesNotExistError(prefixed_name)
                 # catch all other cases
                 raise S3IOError(
                     'py3s3 GET error. '
@@ -296,26 +316,29 @@ class S3Storage(Storage):
         return file
 
     def _open(self, name, mode='rb'):
+        if mode not in ('rb',):
+            S3IOError("No modes besides 'rb' are available for opening file from S3.")
         prefixed_name = self._prepend_name_prefix(name)
         file = self._get_file(prefixed_name)
         file.name = name
         return file
 
+    def _save(self, name, file):
+        file.prefixed_name = self._prepend_name_prefix(name)
+
+        mimetype = file.mimetype if hasattr(file, 'mimetype') and file.mimetype else ''
+
+        # Convert file to a S3ContentFile so file
+        # can be pushed up to S3.
+        if type(file) is not S3ContentFile:
+            file = S3ContentFile(file.read(), file.prefixed_name, mimetype)
+
+        self._put_file(file)
+        return name
+
     def delete(self, name):
         prefixed_name = self._prepend_name_prefix(name)
-        timestamp = self.request_timestamp()
-        stringtosign = '\n'.join([
-            'DELETE',
-            '',
-            '',
-            timestamp,
-            '/' + self.bucket + prefixed_name
-        ])
-        signature = self.request_signature(stringtosign)
-        headers = dict()
-        headers['Date'] = timestamp
-        if self.access_key and self.secret_key:
-            headers['Authorization'] = ''.join(['AWS' + ' ', self.access_key, ':', signature])
+        headers = self._get_request_headers('DELETE', prefixed_name)
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('DELETE', prefixed_name, headers=headers)
             response = conn.getresponse()
@@ -343,9 +366,7 @@ class S3Storage(Storage):
         raise NotImplementedError()
 
     def size(self, name):
-        with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('GET', self.url(name))
-            return conn.getresponse().length
+        return int(self._get_response_headers(name).get('Content-Length', 0))
 
     def url(self, name):
         """Return URL of resource"""
@@ -356,31 +377,8 @@ class S3Storage(Storage):
         url_tuple = (scheme, self.netloc, path, query, fragment)
         return urllib.parse.urlunsplit(url_tuple)
 
-    def _head(self, name):
-        with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('HEAD', self.url(name))
-            return conn.getresponse()
-
-    def _get_headers(self, name):
-        return dict(self._head(name).getheaders())
-
     def modified_time(self, name):
-        dt_header = self._get_headers(name).get('Last-Modified')
+        dt_header = self._get_response_headers(name).get('Last-Modified')
         if dt_header is None:
             raise S3IOError('No modified time available for file: {}'.format(name))
         return self.datetime_from_aws_timestamp(dt_header)
-
-    def _get_content_type(self, file):
-        """
-        Return content type of file. If file does not
-        have a content type, make a guess.
-        """
-        if file.mimetype:
-            return file.mimetype
-
-        # get file extension
-        _, extension = os.path.splitext(file.name)
-        extension = extension.strip('.')
-
-        # Make an educated guess about what the Content-Type should be.
-        return media_types[extension] if extension in media_types else 'binary/octet-stream'

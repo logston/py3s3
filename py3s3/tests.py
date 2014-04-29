@@ -24,7 +24,7 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
             'This test content file was uploaded at about ',
             str(self.datetime)
         ])
-        self.test_file_name = '/test.txt'
+        self.test_file_name = '/testdir/test.txt'
         self.file = S3ContentFile(self.test_content, self.test_file_name, '')
         self.storage = S3Storage('', BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
@@ -35,7 +35,10 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
     def test__000_get_content_type(self):
         self.assertEqual(self.storage._get_content_type(self.file), 'text/plain')
 
-    def test__101_PUT_saves_test_file_to_s3(self):
+    def test__101_HEAD_returns_test_file_existance(self):
+        self.assertFalse(self.storage.exists(self.test_file_name))
+
+    def test__102_PUT_saves_test_file_to_s3(self):
         name = self.storage._save(self.test_file_name, self.file)
         self.assertEqual(name, self.test_file_name)
         self.__class__.modify_time_dt = datetime.datetime.utcnow()
@@ -51,11 +54,11 @@ class Py3s3S3StorageTestCase(unittest.TestCase):
         time_ = self.storage.modified_time(self.test_file_name)
         self.assertAlmostEqual(
             time_, self.__class__.modify_time_dt,
-            delta=datetime.timedelta(seconds=2)
+            delta=datetime.timedelta(seconds=60)
         )
 
     def test__304_HEAD_returns_correct_media_type(self):
-        headers = self.storage._get_headers(self.test_file_name)
+        headers = self.storage._get_response_headers(self.test_file_name)
         self.assertEqual(headers['Content-Type'], 'text/plain')
 
     def test__501_GET_pulls_test_file_down(self):
