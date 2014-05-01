@@ -1,12 +1,11 @@
 language: python
 python:
 - '3.3'
-- '3.4'
 install: true
 script:
 - nosetests py3s3/tests.py
 env:
   matrix:
-  - secure: wqH2Vg91f2poI/NiFsuGVGVAdg4Ln55ORvNiRYwCSLr2+H2HixYwaDZ8rLSGqsxdcHCUT1zRavfD4+Bmmqmpvgm8M+6sc6JDXdYLctAsTBC81zDvX6WfMDfP18zGQPaGMWRqyXMjOK4+1xStqcIpU06xkChbwZGZhLKvDi+REfU=
-  - secure: Ob6gqKJXHLPQvq5e7H/aoG1hH3seB3IV+GcmWaQRVnQKoOrm6LOTXy/G3+cOKm8aYIkb86nXGwcZgDcLbbx6fcbuYyB0tTSTN4sX46ziE62GE5s4fH6dfbp5gObCcDs6nQrdinYx33Wt2T7pvhmkCVCiAAxMo+wLi0fzNvY5pu0=
-  - secure: E2ZtTG2IPuCmVGLLB8ovM7OqLRMLt+EL1N+sM/4YUMC5kNT+bPVgpAPENWVvXhQ9nuamse1AwLNXkEHYbet2kl2eSMZdfbkSDfeWc1ahusM4zWoTCfu3/tZ4cRSfb5aMQiqQM6WqWlvoiUTT5R7qK8MLn0PeckLuxhUYRIAksTM=
+  - secure: tqCxssCV/VVb3T0jKH74HYbNneFXRrw8DCz07URB7rFbSHl3lbiHG3CukQcnfanqvIyN70rm1yZ6PoWjvy7vysFUKt0YVcqnB+trcN0UnhMoc/2e7myegumB9UndHUlf9/mJfOyZ61mcT1GlgC7usAYZ1XPp+3VEoy0xLpXTpus=
+  - secure: pLHSixV4Vjo7yXFetjKPzCv8VIW6FDwVdUP/ExuN0CeJDIxznoZ7AA0MXWtXZYTGAJ2J+ocn+CCNvYaq60LOv6h7cMONYVDptx+wSIDxf/jjs7UoXvatwYW76TVMVxxlU9ohD5UBajCOB1SDMiDnMnzn3nFvm+G2TwT6FvKkvLg=
+  - secure: nffqTPXBS1Ic5TdyUzNyMio9HniEABeghCpkFEb4xHL9TBRZA7dTrpBtizExceRpwtzfx7jn/6qDm9T1vPBElgYhq8/66C+l9yzVwByipUazuQmNtvYCqq34JhJyyiRXjb8zhnmyJfy2LDJa5+Qtyl606Ycvlhh04QRJFdRynzk=
