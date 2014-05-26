@@ -2,7 +2,7 @@
     A custom ContentFile for S3 uploads/downloads.
 """
 import hashlib
-from io import BytesIO
+from io import BytesIO, UnsupportedOperation
 import logging
 import os
 
