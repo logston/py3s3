@@ -192,12 +192,13 @@ class S3ContentFile(ContentFile):
         self._content = None
         self.content = content
         self.mimetype = mimetype
+        self.pos = 0
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
-        return '{}'.format(self.name)
+        return '<{} ({} bytes)>'.format(self.name, self.size)
 
     @property
     def content(self):
@@ -219,11 +220,25 @@ class S3ContentFile(ContentFile):
         digest = hashlib.md5(self.content).digest()
         return b64_string(digest)
 
-    def read(self):
-        return self.content
+    def read(self, chunk_size=None):
+            return self.content
 
     def write(self, content):
         raise NotImplementedError
 
     def close(self):
         raise NotImplementedError
+
+    def read(self, chunk_size):
+        """
+        Return chunk_size of bytes, starting from self.pos, from self.content.
+        """
+        data = self.content[self.pos:self.pos + chunk_size]
+        self.pos += len(data)
+        return data
+
+    def seek(self, pos):
+        self.pos = pos
+
+    def tell(self):
+        return self.pos
