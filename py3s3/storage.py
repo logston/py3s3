@@ -324,14 +324,14 @@ class S3Storage(Storage):
         return file
 
     def _save(self, name, file):
-        file.prefixed_name = self._prepend_name_prefix(name)
-
         mimetype = file.mimetype if hasattr(file, 'mimetype') and file.mimetype else ''
+        file.prefixed_name = self._prepend_name_prefix(name)
 
         # Convert file to a S3ContentFile so file
         # can be pushed up to S3.
         if type(file) is not S3ContentFile:
             file = S3ContentFile(file.read(), file.prefixed_name, mimetype)
+            file.prefixed_name = self._prepend_name_prefix(name)
 
         self._put_file(file)
         return name
