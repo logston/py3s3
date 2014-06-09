@@ -220,22 +220,22 @@ class S3ContentFile(ContentFile):
         digest = hashlib.md5(self.content).digest()
         return b64_string(digest)
 
-    def read(self, chunk_size=None):
-            return self.content
-
     def write(self, content):
         raise NotImplementedError
 
     def close(self):
         raise NotImplementedError
 
-    def read(self, chunk_size):
+    def read(self, chunk_size=None):
         """
         Return chunk_size of bytes, starting from self.pos, from self.content.
         """
-        data = self.content[self.pos:self.pos + chunk_size]
-        self.pos += len(data)
-        return data
+        if chunk_size:
+            data = self.content[self.pos:self.pos + chunk_size]
+            self.pos += len(data)
+            return data
+        else:
+            return self.content
 
     def seek(self, pos):
         self.pos = pos
