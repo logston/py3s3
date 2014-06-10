@@ -209,11 +209,12 @@ class S3Storage(Storage):
         return b64_string(digest)
 
     def _head(self, name):
+        headers = self._request_headers('HEAD', self._prepend_name_prefix(name))
         with closing(HTTPConnection(self.netloc)) as conn:
-            conn.request('HEAD', self.url(name), headers=self._get_request_headers('HEAD', name))
+            conn.request('HEAD', self.url(name), headers=headers)
             return conn.getresponse()
 
-    def _get_request_headers(self, method, prefixed_name, post_params=None):
+    def _request_headers(self, method, prefixed_name, post_params=None):
         headers = dict()
         timestamp = self.request_timestamp()
         headers['Date'] = timestamp
@@ -276,7 +277,7 @@ class S3Storage(Storage):
 
         }
 
-        headers = self._get_request_headers('PUT', file.prefixed_name, post_params=post_params)
+        headers = self._request_headers('PUT', file.prefixed_name, post_params=post_params)
 
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('PUT', file.prefixed_name, file.read(), headers=headers)
@@ -294,7 +295,7 @@ class S3Storage(Storage):
         """
         Return a signature for use in GET requests
         """
-        headers = self._get_request_headers('GET', prefixed_name)
+        headers = self._request_headers('GET', prefixed_name)
         file = S3ContentFile('')
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('GET', prefixed_name, headers=headers)
@@ -338,7 +339,7 @@ class S3Storage(Storage):
 
     def delete(self, name):
         prefixed_name = self._prepend_name_prefix(name)
-        headers = self._get_request_headers('DELETE', prefixed_name)
+        headers = self._request_headers('DELETE', prefixed_name)
         with closing(HTTPConnection(self.netloc)) as conn:
             conn.request('DELETE', prefixed_name, headers=headers)
             response = conn.getresponse()
