@@ -223,9 +223,6 @@ class S3ContentFile(ContentFile):
     def write(self, content):
         raise NotImplementedError
 
-    def close(self):
-        raise NotImplementedError
-
     def read(self, chunk_size=None):
         """
         Return chunk_size of bytes, starting from self.pos, from self.content.
