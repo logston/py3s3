@@ -16,6 +16,7 @@ from py3s3.files import S3ContentFile
 from py3s3.utils import b64_string
 from py3s3.utils import ENCODING
 from py3s3.utils import media_types
+from py3s3.utils import get_valid_filename
 
 
 class S3IOError(IOError):
