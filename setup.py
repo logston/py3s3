@@ -28,7 +28,6 @@ class Tox(TestCommand):
         from tox._cmdline import main
         sys.exit(main(self.test_args))
 
-# TODO choose correct classifiers
 
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
@@ -40,11 +39,12 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3 :: Only",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
-    "Topic :: System :: Filesystems",
     "Topic :: Utilities",
 ]
+
 
 setup(name='py3s3',
       version=py3s3.__version__,
@@ -60,5 +60,4 @@ setup(name='py3s3',
       classifiers=CLASSIFIERS,
       packages=['py3s3'],
       tests_require=['tox'],
-      cmdclass={'test': Tox},
-)
+      cmdclass={'test': Tox})

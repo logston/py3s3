@@ -17,6 +17,7 @@ from py3s3.utils import b64_string
 from py3s3.utils import ENCODING
 from py3s3.utils import media_types
 from py3s3.utils import get_valid_filename
+from py3s3.utils import validate_values
 
 
 class S3IOError(IOError):
@@ -166,6 +167,10 @@ class S3Storage(Storage):
     """
     def __init__(self, name_prefix, bucket, aws_access_key, aws_secret_key):
         self.name_prefix = name_prefix
+        config_values = {'bucket': bucket,
+                         'aws_access_key': aws_access_key,
+                         'aws_secret_key': aws_secret_key}
+        validate_values(func=lambda value: value is not None, dic=config_values)
         self.bucket = bucket
         self.access_key = aws_access_key
         self.secret_key = aws_secret_key

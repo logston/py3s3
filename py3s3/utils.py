@@ -41,3 +41,13 @@ def get_valid_filename(s):
     """
     s = s.strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
+
+
+def validate_values(func, dic):
+    """
+    Validate each value in ``dic`` by passing it through ``func``.
+    Raise a ``ValueError`` if ``func`` does not return ``True``.
+    """
+    for value_name, value in dic.items():
+        if not func(value):
+            raise ValueError('{} can not be {}'.format(value_name, value))
