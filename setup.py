@@ -12,9 +12,11 @@ import py3s3
 with open(os.path.join(os.path.dirname(__file__), "README.rst")) as file:
     README = file.read()
 
+with open(os.path.join(os.path.dirname(__file__), 'LICENSE')) as file:
+    LICENSE = file.read()
+
 
 class Tox(TestCommand):
-
     """Command to make python setup.py test run."""
 
     def finalize_options(self):
@@ -56,8 +58,10 @@ setup(name='py3s3',
       description='A bare bones package for uploading to and downloading '
                   'from AWS S3 from within Python 3.3+',
       long_description=README,
-      license='BSD',
+      license=LICENSE,
       classifiers=CLASSIFIERS,
       packages=['py3s3'],
+      include_package_data=True,
+      package_data={'': ['LICENSE', 'README.rst']},
       tests_require=['tox'],
       cmdclass={'test': Tox})

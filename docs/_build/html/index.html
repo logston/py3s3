@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to py3s3’s documentation! &mdash; py3s3 0.1.0 documentation</title>
+    <title>py3s3 | AWS S3 &amp; Python 3.3+ &mdash; py3s3 0.2.2 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0',
+        VERSION:     '0.2.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="py3s3 0.1.0 documentation" href="#" /> 
+    <link rel="top" title="py3s3 0.2.2 documentation" href="#" /> 
   </head>
   <body>
     <div class="related">
@@ -32,7 +32,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">py3s3 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">py3s3 0.2.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -41,12 +41,39 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-py3s3-s-documentation">
-<h1>Welcome to py3s3&#8217;s documentation!<a class="headerlink" href="#welcome-to-py3s3-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="py3s3-aws-s3-python-3-3">
+<h1>py3s3 | AWS S3 &amp; Python 3.3+<a class="headerlink" href="#py3s3-aws-s3-python-3-3" title="Permalink to this headline">¶</a></h1>
+<p>A bare bones package for uploading to and downloading from AWS S3 from within
+Python 3.3+</p>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install the latest stable version of py3s3:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install py3s3
+</pre></div>
+</div>
+<p>To install the latest development version:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone git@github.com:logston/py3s3.git
+$ cd py3s3
+$ python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">file_name</span> <span class="o">=</span> <span class="s">&#39;/testdir/test.txt&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">file</span> <span class="o">=</span> <span class="n">S3ContentFile</span><span class="p">(</span><span class="s">&quot;My file&#39;s content&quot;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="s">&#39;file/name/prefix&#39;</span><span class="p">,</span> <span class="s">&#39;my_bucket&#39;</span><span class="p">,</span> <span class="n">AWS_ACCESS_KEY</span><span class="p">,</span> <span class="n">AWS_SECRET_KEY</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_file</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">_open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">new_file</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="go">My file&#39;s content</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -66,7 +93,11 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to py3s3&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">py3s3 | AWS S3 &amp; Python 3.3+</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
@@ -98,12 +129,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">py3s3 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">py3s3 0.2.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Paul Logston.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

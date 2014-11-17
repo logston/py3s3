@@ -11,6 +11,4 @@ __pycache__/
 .coverage
 .tox
 
-# AWS api info used for tests
-secrets.sh
-rm_secrets.sh
+.swp
