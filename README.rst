@@ -1,6 +1,12 @@
 .. image:: https://travis-ci.org/logston/py3s3.png?branch=master
     :target: https://travis-ci.org/logston/py3s3
 
+Updates
+-------
+
+Work on this package has ceased. Development efforts have been moved to openS3.
+https://pypi.python.org/pypi/openS3
+
  
 Installation
 ------------
