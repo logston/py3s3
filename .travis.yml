@@ -4,9 +4,9 @@ python:
 - '3.4'
 install: true
 script:
-- nosetests py3s3/tests.py
+- nosetests tests.py
 env:
   global:
-    - secure: tqCxssCV/VVb3T0jKH74HYbNneFXRrw8DCz07URB7rFbSHl3lbiHG3CukQcnfanqvIyN70rm1yZ6PoWjvy7vysFUKt0YVcqnB+trcN0UnhMoc/2e7myegumB9UndHUlf9/mJfOyZ61mcT1GlgC7usAYZ1XPp+3VEoy0xLpXTpus=
-    - secure: pLHSixV4Vjo7yXFetjKPzCv8VIW6FDwVdUP/ExuN0CeJDIxznoZ7AA0MXWtXZYTGAJ2J+ocn+CCNvYaq60LOv6h7cMONYVDptx+wSIDxf/jjs7UoXvatwYW76TVMVxxlU9ohD5UBajCOB1SDMiDnMnzn3nFvm+G2TwT6FvKkvLg=
-    - secure: nffqTPXBS1Ic5TdyUzNyMio9HniEABeghCpkFEb4xHL9TBRZA7dTrpBtizExceRpwtzfx7jn/6qDm9T1vPBElgYhq8/66C+l9yzVwByipUazuQmNtvYCqq34JhJyyiRXjb8zhnmyJfy2LDJa5+Qtyl606Ycvlhh04QRJFdRynzk=
+  - secure: ZfUUQHwUu2P9/IkrPbxF6oTbBZhV411dy0cKnbdlkACHypQLp7619lqgp7zRbennvxdyro2zJG7tJ/vWrp8DAI1Mo5vUn5px/giN/CBj+9Qz5VH8cK95ndKC3nfFGrLucKqoMTVe7GhcTHp8ytC+xF39dR1vJOraQLPUwHektC0=
+  - secure: IoQ7Gogb49Li0RkA9rcsumQq4oJR42tId9JYLxr/Th92lbTcZ5PyLGDeNXgqyrWYv5kAh0pFFX69POm/u+ivekY+iDia37HTJmTqnHpEfjX9TsXEHvngXDsNOnJkwlW1yXPJKFiTlVZkRDM7s6C48Uy5uXOpD0v+zKF/TNEg+TM=
+  - secure: rKT7bXVCRIrSsdLQH7YkTOVYLcIzfxGaDZldlQtETx3mdRtPVk1n8cjE+q+O3egmV15yOGJfwG3UMf3shFZZXIFGSgz6AqA/B+XM5UkVMbrPaycNYg4a4Mm8P5s6B0AD5cqu3/ljCWL41uAi1F6Jol06PCtswaahJpyC7sdsHKo=

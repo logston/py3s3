@@ -182,3 +182,7 @@ class Py3s3S3StorageLargeFileSizeTestCase(unittest.TestCase):
     def test__701_DELETE_deletes_test_file_from_s3(self):
         self.storage.delete(self.test_file_name)
         self.assertFalse(self.storage.exists(self.test_file_name))
+
+
+if __name__ == '__main__':
+    unittest.main()
